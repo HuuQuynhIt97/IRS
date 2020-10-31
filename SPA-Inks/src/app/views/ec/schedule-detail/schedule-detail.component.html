@@ -1,0 +1,310 @@
+<div class="row">
+  <div class="col-md-5">
+    <div class="card">
+      <div class="col-md-12 card-body table-responsive">
+        <!--  Model Name -->
+        <div class="row">
+          <div class="col-md-3 mt-2">
+            <label>Model Name: </label>
+          </div>
+          <div class="col-md-8 mt-2">
+            <input type="text" name="" disabled id="input" class="form-control" [value]="modelName" required="required"
+              title="">
+          </div>
+
+        </div>
+        <!-- End Model Name -->
+
+        <!--  Model No -->
+
+        <div class="row">
+          <div class="col-md-3 mt-2">
+            <label>Model NO: </label>
+          </div>
+          <div class="col-md-8 mt-2">
+            <input type="text" name="" disabled id="input" class="form-control" [value]="modelNo" required="required"
+              title="">
+          </div>
+          <div class="col-md-1 mt-2">
+          </div>
+        </div>
+        <!-- End Model No -->
+
+        <!-- Article No -->
+        <div class="row">
+          <div class="col-md-3 mt-2">
+            <label>Article NO: </label>
+          </div>
+          <div class="col-md-8 mt-2">
+            <input type="text" name="" disabled id="input" class="form-control" [value]="articleNo" required="required"
+              title="">
+
+          </div>
+          <div class="col-md-1 mt-2">
+          </div>
+        </div>
+        <!-- End Article No -->
+
+        <!-- ArtProcess -->
+        <div class="row">
+          <div class="col-md-3 mt-2">
+            <label>Treatment: </label>
+          </div>
+          <div class="col-md-8 mt-2">
+            <button type="button" class="btn btn-danger rounded-pill">{{ProcessName}}</button>
+          </div>
+          <div class="col-md-1 mt-2">
+          </div>
+        </div>
+        <!-- End Art Process -->
+
+        <!-- Object -->
+        <div class="row">
+          <div class="col-md-3 mt-2">
+            <label>Process: </label>
+          </div>
+          <div class="col-md-8 mt-2">
+            <button type="button" class="btn btn-danger rounded-pill">{{ObjectName}}</button>
+          </div>
+          <div class="col-md-1 mt-2">
+          </div>
+        </div>
+        <!-- End Object -->
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header">
+
+        <div class="card-tools">
+
+          <ng-container>
+            <ng-container *ngIf="approveStatus; else elseTemplate">
+              <ejs-switch #switch onLabel="{{'DONE' | translate}}" (click)="done()" offLabel="{{'UNDONE' | translate}}"
+                style="width: 100px; margin-right: 10px;" [checked]="finishStatus" [disabled]="true">
+              </ejs-switch>
+            </ng-container>
+            <ng-template #elseTemplate>
+              <ejs-switch #switch onLabel="{{'DONE' | translate}}" (click)="done()" offLabel="{{'UNDONE' | translate}}"
+                style="width: 100px; margin-right: 10px;" [checked]="finishStatus">
+              </ejs-switch>
+            </ng-template>
+
+          </ng-container>
+
+          <ng-container *ngIf="RoleName === 'Admin' || RoleName === 'Supervisor'">
+            <ejs-switch onLabel="Approved" [checked]="approveStatus" (click)="approve()"
+              offLabel="{{'NOT_APPROVED' | translate}}" style="width: 120px;">
+            </ejs-switch>
+          </ng-container>
+
+          <button type="button" (click)='finished()' ejs-button cssClass="e-small e-success ml-2"><i
+              class="fas fa-save"></i> {{ 'FINISHED' | translate}}
+          </button>
+
+        </div>
+      </div>
+      <div class="col-md-12 card-body table-responsive text-center">
+        <!--  Model Name -->
+        <div class="control-section">
+          <ejs-grid #gridPart  gridLines='Both'
+            (actionComplete)='actionComplete($event)' [toolbar]='toolbarOptions' (actionBegin)="actionBeginPart($event)"
+            (rowDeselected)='rowDeselectedPart($event)' (rowSelected)="rowSelected($event)" [dataSource]='glueData'
+            allowPaging='true' [allowSorting]='true' allowResizing='true' showColumnMenu='true'
+            [allowExcelExport]='true' allowFiltering='true' [filterSettings]='filterSettings'
+            (dataBound)='dataBoundPart()'
+            [pageSettings]='pageSettings' (toolbarClick)='toolbarClick($event)' [editSettings]='editSettings'>
+            <e-columns>
+              <e-column field='id' isPrimaryKey='true' textAlign='Center' headerText='#' width=20>
+                <ng-template let-data #template>{{NO(data.index)}}</ng-template>
+                <ng-template #editTemplate let-data>
+                  <!-- {{NO(data.index)}} -->
+                </ng-template>
+              </e-column>
+
+              <e-column field='part' headerText='Part' isPrimaryKey='true' width=80 textAlign='Center'>
+                <ng-template #headerTemplate let-data>
+                  Part
+                </ng-template>
+                <ng-template let-data #template>
+                  <ejs-tooltip [content]="tooltips(data.part)">
+                    {{data.part}}
+                  </ejs-tooltip>
+
+                </ng-template>
+                <ng-template #editTemplate let-data>
+                  <ejs-dropdownlist #positionDropdownlist [dataSource]='partData' popupHeight='200px' popupWidth='250px'  [value]='data.name'
+                    [fields]='fieldsPosition' [allowFiltering]='true'
+                    [value]="data.partID"
+                    (change)='onChangePosition($event,data, data.index)'>
+                  </ejs-dropdownlist>
+                </ng-template>
+              </e-column>
+
+              <e-column field='treatmentWay' headerText='Treatment Way' width=80 textAlign='Center'>
+                <ng-template #headerTemplate let-data>
+                  Treatment Way
+                </ng-template>
+                <ng-template let-data #template>
+                  <!-- <ejs-tooltip [content]="tooltips(data.treatmentWay)">
+                    {{data.treatmentWay}}
+                  </ejs-tooltip> -->
+                  <ejs-dropdownlist #treatmentWayDropdownlist [dataSource]='treatmentWayData'  popupHeight='200px' popupWidth='250px'  [value]='data.name'
+                    [fields]='fieldsPosition' [allowFiltering]='true' [value]="data.treatmentWayID"
+                    (change)='onChangeTreatmentWay($event,data, data.index)'>
+                  </ejs-dropdownlist>
+                </ng-template>
+                <ng-template #editTemplate let-data>
+                  <ejs-dropdownlist #treatmentWayDropdownlist [dataSource]='treatmentWayData' popupHeight='200px' popupWidth='250px'  [value]='data.name'
+                    [fields]='fieldsPosition' [allowFiltering]='true' [value]="data.treatmentWayID"
+                    (change)='onChangeTreatmentWay($event,data, data.index)'>
+                  </ejs-dropdownlist>
+                </ng-template>
+              </e-column>
+              <e-column field='name' headerText='Part' textAlign='Center'>
+                <ng-template #headerTemplate let-data>
+                  Recipe
+                </ng-template>
+                <ng-template let-data #template>
+                  <ng-container *ngIf="data.name === '1' || data.name === null; else elseTemplate">
+                    N/A
+                  </ng-container>
+                  <ng-template #elseTemplate>
+                    <ejs-tooltip [content]="tooltips(data.name)">
+                      {{data.name}}
+                    </ejs-tooltip>
+                  </ng-template>
+                </ng-template>
+                <ng-template #editTemplate let-data>
+                  <ng-container *ngIf="data.name === '1' || data.name === null; else elseTemplate">
+                    N/A
+                  </ng-container>
+                  <ng-template #elseTemplate>
+                    {{data.name}}
+                  </ng-template>
+
+                </ng-template>
+              </e-column>
+            </e-columns>
+          </ejs-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- preview -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="col-md-12 card-body table-responsive">
+        <div class="row">
+          <div class="col-md-12 mt-2 ">
+            <h3 class="card-title pr-2">
+              <span class="badge badge-info">{{'PREVIEW' | translate}} : </span>
+            </h3>
+            <span style="font-weight: bold;">{{textPreview}}</span>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="col-md-12 card-body table-responsive">
+        <!--  Model Name -->
+        <div class="row">
+          <button type="button" (click)="ClickSub(0)" class="btn bg-gradient-secondary btn-sm rounded-pill">
+            {{ 'DEFAULT' | translate}}
+          </button>
+          <button type="button" *ngFor="let item of supData" style="margin: 3px" (click)="ClickSub(item)"
+            class="btn bg-gradient-info btn-sm rounded-pill">
+            <i class="fas fa-cannabis"></i> {{item.name}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+
+      <div class="col-md-12 card-body table-responsive" *ngIf="isShow">
+        <div class="row">
+
+          <div class="col-md-12">
+            <ejs-grid #gridChemical [dataSource]='chemicalData' allowPaging="true" [pageSettings]='pageSettings'
+              [editSettings]='editSettingss' [toolbar]='toolbarChemical' [allowSorting]='true' showColumnMenu='true'
+              allowSorting='true' allowResizing='true' autoFit='true' gridLines='Both' [selectedRowIndex]='rowIndex'
+              (actionBegin)="actionBeginChemical($event)" (rowDeselected)='rowDeselected($event)'
+              (rowSelected)="rowSelectedChemical($event)" (toolbarClick)='ChemicalToolbarClick($event)'
+              (dataBound)='dataBoundChemical()'>
+              <e-columns>
+
+                <e-column textAlign='Center' isPrimaryKey='true' width='50'>
+                  <ng-template #headerTemplate let-data>
+                    <span style="color: transparent;">aaaaaaa</span>
+                  </ng-template>
+                  <ng-template #template let-data>
+                    <p-checkbox [checked]="data.status" (change)="changeHandler($event,data)" color="success" animation="pulse" shape="curve" bigger="true">
+                      <i p-icon class="material-icons">done</i>
+                    </p-checkbox>
+
+                  </ng-template>
+
+                  <ng-template #editTemplate let-data>
+                    <p-checkbox [checked]="data.status" (change)="changeHandler($event,data)" color="success" animation="pulse" shape="curve" bigger="true">
+                      <i p-icon class="material-icons">done</i>
+                    </p-checkbox>
+
+                  </ng-template>
+
+                </e-column>
+
+                <e-column field='name'  headerText='Part' textAlign='Center' width='150'>
+                  <ng-template #headerTemplate let-data>
+                    Ink/Chemical
+                  </ng-template>
+                  <ng-template #template let-data>
+                    {{data.name + ' ' + '(' + data.subname + ')'}}
+                  </ng-template>
+                  <ng-template #editTemplate let-data>
+                    {{data.name + ' ' + '(' + data.subname + ')'}}
+                  </ng-template>
+                </e-column>
+                <e-column field='code'  headerText='Code' textAlign='Center' width=60>
+                  <ng-template #template let-data>
+                    {{data.code}}
+                  </ng-template>
+                  <ng-template #editTemplate let-data>
+                    {{data.code}}
+                  </ng-template>
+                </e-column>
+                <e-column field='percentage' [edit]="editparamsChemical" headerText='%' textAlign='Center' width=60>
+
+                </e-column>
+
+              </e-columns>
+            </ejs-grid>
+          </div>
+        </div>
+
+
+
+
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+.e-grid td.e-active {
+  background: #8eb3de!important;
+  color: #000;
+}
+/* input.larger {
+  width: 20px;
+  height: 20px;
+} */
+.bg-gradient-info.btn:hover {
+  background: #e81227 linear-gradient(180deg,#e81227,#e81227) repeat-x!important;
+}
+.bg-gradient-info.btn:focus {
+  background: #e81227 linear-gradient(180deg,#e81227,#e81227) repeat-x!important;
+}
+.bg-gradient-info.btn.active, .bg-gradient-info.btn:active, .bg-gradient-info.btn:not(:disabled):not(.disabled).active, .bg-gradient-info.btn:not(:disabled):not(.disabled):active {
+  background: #e81227 linear-gradient(180deg,#e81227,#e81227) repeat-x!important;
+}
+.bg-gradient-info.btn:hover {
+  border-color: #e81227;
+  color: #ececec;
+}

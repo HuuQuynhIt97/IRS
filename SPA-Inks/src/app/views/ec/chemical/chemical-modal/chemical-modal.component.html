@@ -1,0 +1,77 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{title}}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+
+  <div class="form-group">
+    <!-- <label for="">Chemical</label> -->
+    <input type="text" [(ngModel)]="chemical.name" placeholder="Enter Chemical" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <!-- <label for="">Code</label> -->
+    <input type="text" [(ngModel)]="chemical.code" placeholder="Enter Code" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <!-- <label for="">VOC (%)</label> -->
+    <input type="text" [(ngModel)]="chemical.voc" placeholder="Enter VOC (%)" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <!-- <label for="">Material #</label> -->
+    <input type="text" [(ngModel)]="chemical.materialNO" placeholder="Enter Material #" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <!-- <label for="">Unit</label> -->
+    <input type="text" [(ngModel)]="chemical.unit" placeholder="Enter Unit" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <!-- <label for="">Days to Expiration</label> -->
+    <input type="text" [(ngModel)]="chemical.daysToExpiration" placeholder="Enter Days to Expiration" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">Modify %</label>
+      <ejs-dropdownlist
+        id='modifyDropdownlist'
+        [dataSource]='ModifyData'
+        [fields]='fieldsModify'
+        [allowFiltering]='true'
+        [value]="chemical.modify"
+        (change)='onChangeModify($event)'
+        [placeholder]='textModify'>
+      </ejs-dropdownlist>
+  </div>
+  <div class="form-group">
+    <label for="">Treatment</label>
+      <ejs-dropdownlist
+        id='glueDropdownlist'
+        [dataSource]='ProcessData'
+        [fields]='fieldsProcess'
+        [allowFiltering]='true'
+        [value]="chemical.processID"
+        (change)='onChangeProcess($event)'
+        [placeholder]='textProcess'>
+      </ejs-dropdownlist>
+  </div>
+  <div class="form-group">
+    <label for="">Supplier</label>
+      <ejs-dropdownlist
+        id='glueDropdownlist'
+        [dataSource]='supplier'
+        [fields]='fieldsGlue'
+        [allowFiltering]='true'
+        [value]="chemical.supplierID"
+        (change)='onChangeSup($event)'
+        [placeholder]='textGlue'>
+      </ejs-dropdownlist>
+  </div>
+  <div class="form-group d-none">
+    <label for="">Code</label>
+    <input type="text" class="form-control">
+  </div>
+</div>
+<div class="modal-footer justify-content-between">
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+  <button type="button" class="btn btn-outline-dark" (click)="save()">Save</button>
+</div>

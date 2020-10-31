@@ -1,0 +1,362 @@
+<ngx-spinner bdColor ="rgba(174,171,171,0.8)" size = "medium" color = "#166cc1" type = "ball-climbing-dot" [fullScreen] = "true"><p style="color: white" > Loading... </p>
+</ngx-spinner>
+<div class="card">
+  <!-- <div class="card-header">
+    <h3 class="card-title">BPFC Schedule</h3>
+  </div> -->
+  <div class="card-body p-0">
+    <div class="row">
+      <div class="col-md-12">
+        <ejs-grid #grid [dataSource]='data' allowSorting='true' allowResizing='true' allowPaging="true"
+          [pageSettings]='pageSettings' allowFiltering='true' [filterSettings]='filterSettings'
+          [editSettings]='editSettings' [toolbar]='toolbar' [allowExcelExport]='true' allowResizing='true'
+          gridLines='Both' showColumnMenu='true' (toolbarClick)='toolbarClick($event)' (created)="createdSearch($event)"
+          (actionBegin)='actionBegin($event)'  (excelExportComplete)='excelExportComplete()' (recordDoubleClick)="recordDoubleClick($event,editModal)">
+          <e-columns>
+            <e-column field='#' [visible]='true' isPrimaryKey='true' textAlign='Center' headerText='#' width=40>
+              <ng-template let-data #template>{{NO(data.index)}}</ng-template>
+            </e-column>
+            <e-column field='modelName' isPrimaryKey='true' textAlign='Center' width='100' headerText='Model Name'>
+              <ng-template #template let-data>
+                <ejs-tooltip [content]="tooltips(data.modelName)">
+                  {{data.modelName}}
+                </ejs-tooltip>
+              </ng-template>
+            </e-column>
+            <e-column field='modelNo' isPrimaryKey='true' textAlign='Center' width='100' headerText='Model NO'>
+            </e-column>
+            <e-column field='articleNo' isPrimaryKey='true' textAlign='Center' width='100' headerText='Article NO'>
+            </e-column>
+            <e-column field='treatment' isPrimaryKey='true' textAlign='Center' width='100' headerText='Treatment'>
+              <ng-template #template let-data>
+                <ng-container *ngIf="data.treatment == 'Print'; else elseTemplate">
+                  <span style="font-size: small;" class="badge badge-pill badge-primary">{{data.treatment}}</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <span style="font-size: small;" class="badge badge-pill badge-danger">{{data.treatment}}</span>
+                </ng-template>
+              </ng-template>
+            </e-column>
+            <e-column field='process' isPrimaryKey='true' textAlign='Center' width='100' headerText='Process'>
+              <ng-template #template let-data>
+                <span style="font-size: small;" class="badge badge-pill badge-secondary">{{data.process}}</span>
+              </ng-template>
+
+            </e-column>
+            <e-column field='parts' isPrimaryKey='true' textAlign='Center' width='100' headerText='Part'>
+              <ng-template let-data #template>
+                <ejs-tooltip [content]="tooltip(data.parts)">
+                  {{data.parts.join(' - ') || '#N/A'}}
+                </ejs-tooltip>
+              </ng-template>
+            </e-column>
+            <e-column field='finishedStatus' isPrimaryKey='true' textAlign='Center' width='100' headerText='Status'>
+              <ng-template #template let-data>
+                <ng-container *ngIf="data.finishedStatus == true; else elseTemplate">
+                  <span>Done</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <span><i style="color: red; font-size: 20px;" class="fas fa-exclamation-circle"></i> Undone</span>
+                </ng-template>
+              </ng-template>
+            </e-column>
+            <e-column field='approvalStatus' isPrimaryKey='true' textAlign='Center' width='100'
+              headerText='Approval Status'>
+              <ng-template #template let-data>{{data.approvalStatus == true? 'Done': 'Undone'}}</ng-template>
+            </e-column>
+
+            <e-column field='establishDate' isPrimaryKey='true' type='date' format='d MMM, yyyy ' width='100'
+              headerText='Due Date' textAlign='Center'>
+              <ng-template let-data #template>
+                <ejs-tooltip [content]="tooltips(data.establishDate | date:'y-MM-dd')">
+                  {{data.establishDate | date:'y-MM-dd'}}
+                </ejs-tooltip>
+              </ng-template>
+            </e-column>
+
+            <e-column field='productionDate' isPrimaryKey='true' type='date' format='d MMM, yyyy' width='100'
+              headerText='Production Date' textAlign='Center'>
+              <ng-template let-data #template>
+                <ejs-tooltip [content]="tooltips(data.productionDate | date:'y-MM-dd')">
+                  {{data.productionDate | date:'y-MM-dd'}}
+                </ejs-tooltip>
+              </ng-template>
+            </e-column>
+            <!-- <e-column field='approvedBy' isPrimaryKey='true' textAlign='Center' headerText='Approval By Supervisor' width=150></e-column> -->
+            <e-column field='' [visible]='true' isPrimaryKey='true' textAlign='Center' width=100 headerText='Option'>
+              <ng-template #template let-data>
+                <ng-container *ngIf="data.finishedStatus == false; else elseTemplate">
+                  <button ejs-button (click)="detail(data)" cssClass="e-info"><i class="far fa-edit"></i></button>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <button ejs-button (click)="detail(data)" cssClass="e-info"><i class="far fa-edit"></i></button>
+                </ng-template>
+                <div class="btn-group">
+                  <span style="color: transparent">|</span>
+                </div>
+                <div class="btn-group">
+                  <button ejs-button (click)='delete(data)' cssClass="e-danger"><i class="fa fa-trash"></i></button>
+                </div>
+              </ng-template>
+
+            </e-column>
+          </e-columns>
+        </ejs-grid>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer"></div>
+</div>
+
+<ng-template #importModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <i class="fas fa-plus"></i> Import Excel
+    </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="Name">Select File (*Notice: Excel file must be followed a system template. If you do not have a
+            template, please <a [href]="excelDownloadUrl">click here</a> to download. Thank you!)</label>
+          <input (change)="fileProgress($event)" name="file" type="file" class="form-control" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+
+    <button type="button" class="btn btn-primary" (click)="uploadFile()">Upload File</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Close</button>
+  </div>
+
+</ng-template>
+
+<ng-template #AddModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <i class="fas fa-plus"></i> Add Schedule
+    </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="scheduleForm" (ngSubmit)="save()" #f="ngForm" role="form">
+
+    <!-- <div class="modal-body">
+      <div class="form-group">
+        <input type="text" [(ngModel)]="schedule.modelName" placeholder="Enter Model Name (* Required)" class="form-control" >
+      </div>
+      <div class="form-group">
+        <input type="text" [(ngModel)]="schedule.modelNo" placeholder="Enter Model # (* Required)"  class="form-control">
+      </div>
+      <div class="form-group">
+        <input type="text" [(ngModel)]="schedule.articleNo" placeholder="Enter Article # (* Required)"  class="form-control">
+      </div>
+      <div class="form-group">
+        <ejs-dropdownlist
+          id='glueDropdownlist'
+          [dataSource]='ProcessData'
+          [fields]='fieldsProcess'
+          [allowFiltering]='true'
+          [value]="schedule.process"
+          (change)='onChangeTreatment($event)'
+          [placeholder]='textProcess'>
+        </ejs-dropdownlist>
+      </div>
+      <div class="form-group">
+        <input type="text" [(ngModel)]="schedule.object" placeholder="Enter Process # (* Required)"  class="form-control">
+      </div>
+      <div class="form-group">
+        <tag-input [(ngModel)]='schedule.listPart' secondaryPlaceholder="Enter Part # (* Required)"  placeholder="Enter Part #"></tag-input>
+      </div>
+      <div class="form-group">
+        <label for="">Production Date</label>
+        <ejs-datepicker (change)='onChange($event,dateValue)' width="400" [(ngModel)]="dateValue" format='yyyy-MM-dd' placeholder='Enter date' [value]="schedule.productionDate"></ejs-datepicker>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" (click)="save()" >Save</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Close</button>
+    </div> -->
+
+    <!-- test -->
+    <div class="modal-body">
+      <div class="form-group">
+        <input type="text" formControlName="modelName" placeholder="Enter Model Name (* Required)" class="form-control" >
+      </div>
+      <div *ngIf="scheduleForm.controls['modelName'].invalid && (scheduleForm.controls['modelName'].dirty || scheduleForm.controls['modelName'].touched)" class="alert alert-danger">
+        <div *ngIf="scheduleForm.controls['modelName'].errors.required">
+          Model Name is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input type="text" formControlName="modelNo" placeholder="Enter Model # (* Required)"  class="form-control">
+      </div>
+      <div *ngIf="scheduleForm.controls['modelNo'].invalid && (scheduleForm.controls['modelNo'].dirty || scheduleForm.controls['modelNo'].touched)" class="alert alert-danger">
+        <div *ngIf="scheduleForm.controls['modelNo'].errors.required">
+          Model No is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input type="text" formControlName="articleNo" placeholder="Enter Article # (* Required)"  class="form-control">
+      </div>
+      <div *ngIf="scheduleForm.controls['articleNo'].invalid && (scheduleForm.controls['articleNo'].dirty || scheduleForm.controls['articleNo'].touched)" class="alert alert-danger">
+        <div *ngIf="scheduleForm.controls['articleNo'].errors.required">
+          Article No is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <ejs-dropdownlist
+          id='glueDropdownlist'
+          [dataSource]='ProcessData'
+          [fields]='fieldsProcess'
+          [allowFiltering]='true'
+          [value]="schedule.process"
+          formControlName="process"
+          (change)='onChangeTreatment($event)'
+          [placeholder]='textProcess'>
+        </ejs-dropdownlist>
+      </div>
+      <div *ngIf="scheduleForm.controls['process'].invalid && (scheduleForm.controls['process'].dirty || scheduleForm.controls['process'].touched)" class="alert alert-danger">
+        <div *ngIf="scheduleForm.controls['process'].errors.required">
+          Please Select Treatment.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input type="text" formControlName="object"  placeholder="Enter Process # (* Required)"  class="form-control">
+      </div>
+      <div *ngIf="scheduleForm.controls['object'].invalid && (scheduleForm.controls['object'].dirty || scheduleForm.controls['object'].touched)" class="alert alert-danger">
+        <div *ngIf="scheduleForm.controls['object'].errors.required">
+          Process is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <tag-input formControlName="listPart" secondaryPlaceholder="Enter Part # "  placeholder="Enter Part #"></tag-input>
+      </div>
+
+      <div class="form-group">
+        <label for="">Production Date</label>
+        <ejs-datepicker (change)='onChange($event,dateValue)' width="400" formControlName="productionDate" format='yyyy-MM-dd' placeholder='Enter date' [value]="schedule.productionDate"></ejs-datepicker>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="submit" [disabled]="scheduleForm.pristine || scheduleForm.invalid" class="btn btn-primary" >Save</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Close</button>
+    </div>
+
+  </form>
+
+</ng-template>
+
+<ng-template #editModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <i class="fas fa-plus"></i> Edit Schedule
+    </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-8">
+        <ejs-grid #grid [dataSource]='detailData' allowSorting='true' [toolbar]='toolbarEditSchedule' allowResizing='true' allowFiltering='true'
+          [filterSettings]='filterSettings' [editSettings]='editSettingsSchedule' allowResizing='true' gridLines='Both'
+          showColumnMenu='true' (actionBegin)='actionBeginEditSchedule($event)' >
+          <e-columns>
+
+            <e-column field='modelName' textAlign='Center' width='100' headerText='Model Name'>
+              <ng-template let-data #template>{{data.modelName}}</ng-template>
+              <ng-template let-data #editTemplate>{{data.modelName}}</ng-template>
+            </e-column>
+
+            <e-column field='modelNo'  textAlign='Center' width='100' headerText='Model NO'>
+              <ng-template let-data #template>{{data.modelNo}}</ng-template>
+              <ng-template let-data #editTemplate>{{data.modelNo}}</ng-template>
+            </e-column>
+
+            <e-column field='articleNo' textAlign='Center' width='100' headerText='Article NO'>
+              <ng-template let-data #template>{{data.articleNo}}</ng-template>
+              <ng-template let-data #editTemplate>{{data.articleNo}}</ng-template>
+            </e-column>
+
+            <e-column field='treatment'  textAlign='Center' width='100' headerText='Treatment'>
+              <ng-template #template let-data>
+                <ng-container *ngIf="data.treatment == 'Print'; else elseTemplate">
+                  <span style="font-size: small;"
+                    class="badge badge-pill badge-primary">{{data.treatment}}</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <span style="font-size: small;"
+                    class="badge badge-pill badge-danger">{{data.treatment}}</span>
+                </ng-template>
+              </ng-template>
+              <ng-template let-data #editTemplate>
+                <ng-container *ngIf="data.treatment == 'Print'; else elseTemplate">
+                  <span style="font-size: small;"
+                    class="badge badge-pill badge-primary">{{data.treatment}}</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <span style="font-size: small;"
+                    class="badge badge-pill badge-danger">{{data.treatment}}</span>
+                </ng-template>
+              </ng-template>
+            </e-column>
+
+            <e-column field='process'  textAlign='Center' width='100' headerText='Process'>
+              <ng-template #template let-data>
+                <span style="font-size: small;" class="badge badge-pill badge-secondary">{{data.process}}</span>
+              </ng-template>
+              <ng-template let-data #editTemplate>
+                <span style="font-size: small;" class="badge badge-pill badge-secondary">{{data.process}}</span>
+              </ng-template>
+            </e-column>
+
+            <e-column field='productionDate' type='date' format='yyyy-MM-dd ' headerText='Production Date' textAlign='Center'>
+
+              <ng-template #editTemplate let-data>
+                <ejs-datepicker format='yyyy-MM-dd' placeholder="Enter Date"
+                [(ngModel)]="data.productionDate" (change)='ProductionDateChange($event,data)' floatLabelType='Never'></ejs-datepicker>
+              </ng-template>
+            </e-column>
+
+          </e-columns>
+        </ejs-grid>
+      </div>
+      <div class="col-md-4">
+        <ejs-grid #grid [dataSource]='detailPartData' allowSorting='true' [toolbar]='toolbarEditPartSchedule' allowResizing='true' allowFiltering='true'
+          [filterSettings]='filterSettings' [editSettings]='editSettingsPartSchedule' allowResizing='true' gridLines='Both'
+          showColumnMenu='true' (actionComplete)='actionCompletePart($event)' (actionBegin)='actionBeginSchedulePart($event)'>
+          <e-columns>
+            <e-column field='id' isPrimaryKey='true' textAlign='Center' headerText='#' width=40>
+              <ng-template let-data #template>{{NO(data.index)}}</ng-template>
+            </e-column>
+            <e-column field='name' textAlign='Center' width='100' headerText='Part Name'>
+            </e-column>
+          </e-columns>
+        </ejs-grid>
+      </div>
+    </div>
+
+
+  </div>
+  <div class="modal-footer">
+
+    <!-- <button type="button" class="btn btn-primary" (click)="uploadFile()">Upload File</button> -->
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Close</button>
+  </div>
+
+</ng-template>

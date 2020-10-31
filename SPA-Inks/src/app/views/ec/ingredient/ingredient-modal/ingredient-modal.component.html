@@ -1,0 +1,66 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{title}}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-group d-none">
+    <label for="">ID</label>
+    <input [(ngModel)]="ink.id" type="text" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">Ink Name</label>
+    <input type="text" [(ngModel)]="ink.name" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">VOC (%)</label>
+    <input type="text" [(ngModel)]="ink.voc" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">Material #</label>
+    <input type="text" [(ngModel)]="ink.materialNO" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">Unit</label>
+    <input type="text" [(ngModel)]="ink.unit" (blur)="onBlur($event)" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">Days to Expiration</label>
+    <input type="text" [(ngModel)]="ink.daysToExpiration" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="">Choose Process</label>
+      <ejs-dropdownlist
+        id='glueDropdownlist'
+        #glueDropdownlist
+        [dataSource]='ProcessData'
+        [fields]='fieldsProcess'
+        [allowFiltering]='true'
+        [value]="ink.supplierID"
+        (change)='onChangeProcess($event)'
+        [placeholder]='textProcess'>
+      </ejs-dropdownlist>
+  </div>
+  <div class="form-group">
+    <label for="">Choose Supplier</label>
+      <ejs-dropdownlist
+        id='glueDropdownlist'
+        #glueDropdownlist
+        [dataSource]='supplier'
+        [fields]='fieldsGlue'
+        [allowFiltering]='true'
+        [value]="ink.supplierID"
+        (change)='onChangeSup($event)'
+        [placeholder]='textGlue'>
+      </ejs-dropdownlist>
+  </div>
+  <div class="form-group d-none">
+    <label for="">Code</label>
+    <input type="text" class="form-control">
+  </div>
+</div>
+<div class="modal-footer justify-content-between">
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+  <button type="button" class="btn btn-outline-dark" (click)="save()">Save</button>
+</div>

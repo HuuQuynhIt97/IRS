@@ -1,0 +1,30 @@
+<div class="wrapper">
+  <app-header></app-header>
+
+  <div class="content-wrapper">
+    <div class="content-header">
+      <!-- <div class="text-notify" style="margin-bottom: -20px;">
+        <font style="font-size: 20px; color: red;">
+          <marquee scrollamount="10" direction="left" onmouseover="this.stop()" onmouseout="this.start()"  >
+            {{'NOTIFY_TEXT' | translate}}" <a href="http://10.4.0.76:8072/" target="blank">http://10.4.0.76:8072</a>
+          </marquee>
+        </font>
+      </div> -->
+      <app-breadcrumb></app-breadcrumb>
+    </div>
+
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <router-outlet></router-outlet>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </div>
+
+    <!-- /.content -->
+  </div>
+  <app-footer></app-footer>
+</div>

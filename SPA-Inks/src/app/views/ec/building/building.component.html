@@ -1,0 +1,29 @@
+<div class="col-md-12">
+  <div class="card">
+
+    <div class="card-body table-responsive p-0">
+      <ejs-treegrid #treegrid [dataSource]="data"
+                    (contextMenuClick)='contextMenuClick($event)'
+                    (toolbarClick)='toolbarClick($event)'
+                    [treeColumnIndex]='1'
+                    allowSorting='true'
+                    gridLines='Both'
+                    (created)='created()'
+                    [editSettings]="editing"
+                    [contextMenuItems]='contextMenuItems'
+                    (actionComplete)="actionComplete($event)"
+                    [toolbar]='toolbarsss'
+                    childMapping="childNodes"
+                    allowExcelExport='true'
+                    allowPdfExport='true'
+                    (rowSelected)="rowSelected($event)"
+      >
+        <e-columns>
+          <e-column field="entity.level" width="80" isPrimaryKey="true" headerText="Level">
+          </e-column>
+          <e-column field="entity.name" headerText="Building Name"> </e-column>
+        </e-columns>
+      </ejs-treegrid>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,110 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+
+
+      <div class="card-body table-responsive p-0">
+
+        <ejs-grid #grid
+          [dataSource]="userData"
+          allowPaging='true'
+          gridLines='Both'
+          (created)='createdUsers()'
+          (dataBound)='dataBound()'
+          (actionBegin)="actionBegin($event)"
+          [toolbar]='toolbarAccount'
+          [pageSettings]='pageSettings'
+          allowExcelExport='true'
+          (toolbarClick)='toolbarClick($event)'
+          [editSettings]='editSettings'
+        >
+          <e-columns>
+            <e-column field="ID" width="80" isPrimaryKey="true" headerText="ID">
+              <ng-template #template let-data>
+                {{NO(data.index)}}
+              </ng-template>
+              <ng-template #editTemplate let-data>
+              </ng-template>
+            </e-column>
+            <e-column field="Username" headerText="Username">
+              <ng-template #headerTemplate let-data>
+                {{'USERNAME_HEADER' | translate}}
+              </ng-template>
+            </e-column>
+            <e-column field="EmployeeID" width="120" headerText="Account">
+              <ng-template #headerTemplate let-data>
+                {{'EMPLOYEE_HEADER' | translate}}
+              </ng-template>
+            </e-column>
+            <e-column field="Password" textAlign='Center'  isPrimaryKey="true" headerText="Password">
+              <ng-template #headerTemplate let-data>
+                {{'PASSWORD_HEADER' | translate}}
+              </ng-template>
+              <ng-template #template let-data>
+                ********************
+              </ng-template>
+              <ng-template #editTemplate let-data>
+                <div class="e-input-group">
+                  <input type="password" [(ngModel)]="password" class="e-input">
+                </div>
+              </ng-template>
+            </e-column>
+            <e-column field="Email" headerText="Email">
+              <ng-template #template let-data>
+                <ejs-tooltip [content]="tooltips(data.Email)">
+                  {{data.Email}}
+                </ejs-tooltip>
+              </ng-template>
+            </e-column>
+            <e-column field="RoleName" width="100" headerText="Role">
+              <ng-template #headerTemplate let-data>
+                {{'ROLE_HEADER' | translate}}
+              </ng-template>
+              <ng-template #editTemplate let-data>
+                <ejs-dropdownlist #roleDropdownlist [dataSource]='roleData' [value]="data.RoleName"
+                  [fields]='fieldsRole' [allowFiltering]='true'
+                  (change)='onChangeRole($event,data)'>
+                </ejs-dropdownlist>
+              </ng-template>
+            </e-column>
+            <e-column field="BuildingName" width="80" textAlign='Center' headerText="Building">
+              <ng-template #headerTemplate let-data>
+                {{'BUILDING_HEADER' | translate}}
+              </ng-template>
+              <ng-template #editTemplate let-data>
+                <ejs-dropdownlist #positionDropdownlist [dataSource]='buildings' [value]="data.BuildingName"
+                  [fields]='fieldsBuilding' [allowFiltering]='true'
+                  (change)='onChangeBuilding($event,data)'>
+                </ejs-dropdownlist>
+              </ng-template>
+            </e-column>
+            <e-column field="" isPrimaryKey="true" textAlign='Center' headerText="Status">
+              <ng-template #headerTemplate let-data>
+                {{'STATUS_HEADER' | translate}}
+              </ng-template>
+              <ng-template #template let-data>
+                <ng-container *ngIf="data.Status == true; else elseTemplate">
+                  <button type="button" (click)="blockAccount(data)"
+                    class="btn bg-gradient-info btn-sm rounded-pill">
+                    <i class="fas fa-lock-open"></i> {{'STATUS_ABLE' | translate}}
+                  </button>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <button type="button" (click)="blockAccount(data)"
+                    class="btn bg-gradient-red btn-sm rounded-pill">
+                    <i class="fas fa-lock"></i> {{'STATUS_UNABLE' | translate}}
+                  </button>
+                </ng-template>
+
+              </ng-template>
+              <ng-template #editTemplate let-data>
+              </ng-template>
+            </e-column>
+          </e-columns>
+        </ejs-grid>
+      </div>
+    </div>
+  </div>
+</div>
+
+

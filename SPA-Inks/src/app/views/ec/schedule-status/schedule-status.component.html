@@ -1,0 +1,204 @@
+<ngx-spinner bdColor="rgba(174,171,171,0.8)" size="medium" color="#166cc1" type="ball-climbing-dot" [fullScreen]="true">
+  <p style="color: white"> Loading... </p>
+</ngx-spinner>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+
+      <ejs-grid #gridModel [searchSettings]="searchSettings" (dataBound)='dataBound'
+        (toolbarClick)='toolbarClick($event)' (actionBegin)="actionBegin($event)" (created)="createdSearch($event)"
+        (recordDoubleClick)='onDoubleClick($event)' (actionComplete)='actionComplete($event)' [toolbar]='toolbar'
+        [dataSource]='data' allowPaging='true' showColumnMenu='true' allowSorting='true' allowResizing='true'
+        [allowExcelExport]='true' gridLines='Both' [pageSettings]='pageSettings' [editSettings]='editSettings'>
+        <e-columns>
+          <e-column field='' headerText='#' isPrimaryKey='true' width='40' textAlign='Center' isPrimaryKey='true'>
+            <ng-template #template let-data>
+              {{no(data)}}
+            </ng-template>
+          </e-column>
+          <e-column field='modelName' isPrimaryKey='true' textAlign='Center' width='100' headerText='Model Name'>
+            <ng-template #template let-data>
+              <ejs-tooltip [content]="tooltips(data.modelName)">
+                {{data.modelName}}
+              </ejs-tooltip>
+            </ng-template>
+          </e-column>
+          <e-column field='modelNo' isPrimaryKey='true' textAlign='Center' width='100' headerText='Model No'>
+          </e-column>
+          <e-column field='articleNo' isPrimaryKey='true' textAlign='Center' width='100' headerText='Article No'>
+          </e-column>
+          <e-column field='treatment' isPrimaryKey='true' textAlign='Center' width='100' headerText='Treatment'>
+            <ng-template #template let-data>
+              <ng-container *ngIf="data.treatment == 'Print'; else elseTemplate">
+                <span style="font-size: small;" class="badge badge-pill badge-primary">{{data.treatment}}</span>
+              </ng-container>
+              <ng-template #elseTemplate>
+                <span style="font-size: small;" class="badge badge-pill badge-danger">{{data.treatment}}</span>
+              </ng-template>
+            </ng-template>
+          </e-column>
+          <e-column field='process' isPrimaryKey='true' textAlign='Center' width='100' headerText='Process'>
+            <ng-template #template let-data>
+              <span style="font-size: small;" class="badge badge-pill badge-secondary">{{data.process}}</span>
+            </ng-template>
+          </e-column>
+          <e-column field='createdDate' headerText='Created Time' type='date' width='100'
+            format='d MMM, yyyy hh:mm:ss a' width='155' textAlign='Center'>
+            <ng-template #headerTemplate let-data>
+              {{'CREATED_DATETIME_LABEL' | translate}}
+            </ng-template>
+            <ng-template let-data #template>
+              <ejs-tooltip [content]="tooltips(data.createdDate | date:'y-MM-dd hh:mm:ss a')">
+                {{data.createdDate | date:'y-MM-dd hh:mm:ss a'}}
+              </ejs-tooltip>
+            </ng-template>
+          </e-column>
+
+          <e-column field='finishedStatus' isPrimaryKey='true' headerText='Finished' width='100' textAlign='Center'>
+            <ng-template #headerTemplate let-data>
+              {{'FINISH_LABEL' | translate}}
+            </ng-template>
+            <ng-template #template let-data>
+              <span *ngIf="data.finishedStatus == true" class="badge badge-success">YES</span>
+              <span *ngIf="data.finishedStatus == false" class="badge badge-danger">No</span>
+            </ng-template>
+          </e-column>
+          <e-column field='approvalStatus' isPrimaryKey='true' headerText='Approval Status' width='100'
+            textAlign='Center'>
+            <ng-template #headerTemplate let-data>
+              {{'APPROVAL_STATUS_LABEL' | translate}}
+            </ng-template>
+            <ng-template #template let-data>
+              <span *ngIf="data.approvalStatus == true" class="badge badge-success">YES</span>
+              <span *ngIf="data.approvalStatus == false" class="badge badge-danger">No</span>
+            </ng-template>
+          </e-column>
+          <e-column field='approvalBy' headerText='Approval By' width='100' textAlign='Center'>
+            <ng-template #headerTemplate let-data>
+              {{'APPROVAL_BY_LABEL' | translate}}
+            </ng-template>
+          </e-column>
+
+          <e-column field='tool' isPrimaryKey='true' headerText='Detail' width='70' textAlign='Center'>
+            <ng-template #headerTemplate let-data>
+              {{'DETAIL_LABEL' | translate}}
+            </ng-template>
+            <ng-template #template let-data>
+              <button ejs-button (click)='openModalDetail(detailModal, data.id)' cssClass="e-info"><i
+                  class="fa fa-eye"></i></button>
+            </ng-template>
+          </e-column>
+        </e-columns>
+      </ejs-grid>
+
+    </div>
+  </div>
+
+  <ng-template #detailModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">
+        <i class="fas fa-plus"></i> Schedule Detail
+      </h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-6">
+          <ejs-grid #gridglue showColumnMenu='true' allowSorting='true' allowResizing='true' gridLines='Both'
+            [dataSource]='glues' [selectedRowIndex]='0' height='250px' (rowSelected)='rowSelected($event)'>
+            <e-columns>
+              <e-column field='part' isPrimaryKey="true" headerText='Part' textAlign='Center' width='150'>
+                <ng-template #template let-data>
+                  <div data-toggle="tooltip" data-placement="top" title='{{data.part}}'>
+                    {{data.part}}
+                  </div>
+                </ng-template>
+              </e-column>
+              <e-column field='treatmentWay' headerText='Treatment Way' textAlign='Center' width='150'>
+              </e-column>
+              <e-column field='name' headerText='Recipe' textAlign='Center' width='150'>
+                <ng-template let-data #template>
+                  <ng-container *ngIf="data.name === '1' || data.name === null; else elseTemplate">
+                    N/A
+                  </ng-container>
+                  <ng-template #elseTemplate>
+                    {{data.name}}
+                  </ng-template>
+                </ng-template>
+              </e-column>
+            </e-columns>
+          </ejs-grid>
+        </div>
+        <div class="col-md-6">
+          <ejs-grid #gridInkChemical showColumnMenu='true' allowSorting='true' allowResizing='true' gridLines='Both'
+            [dataSource]='ingredients' [allowSorting]='true' height='250px'>
+            <e-columns>
+              <e-column field='#' isPrimaryKey='true' textAlign='Center' headerText='#' width=40>
+                <ng-template let-data #template>{{no(data)}}</ng-template>
+              </e-column>
+
+              <e-column field='name' isPrimaryKey="true" headerText='Ink/Chemical' width=150 textAlign='Center'>
+              </e-column>
+
+              <e-column field='percentage' headerText='%' textAlign='Center' width=70></e-column>
+
+            </e-columns>
+          </ejs-grid>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button type="submit" (click)='release()' *ngIf="RoleName === 'Admin' || RoleName === 'Supervisor'"
+        class="btn btn-success">Release</button>
+      <button type="submit" (click)='reject()' *ngIf="RoleName === 'Admin' || RoleName === 'Supervisor'"
+        class="btn btn-warning">Reject</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Close</button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row bootstrap snippets">
+            <div class="col-md-12 col-md-offset-2 col-sm-12">
+              <div class="comment-wrapper">
+                <div class="panel panel-info">
+                  <div class="panel-body">
+                    <textarea class="form-control" [(ngModel)]="content" placeholder="Write your comment here..."
+                      rows="3"></textarea>
+                    <br>
+                    <button type="button" (click)='createComment()' class="btn btn-info pull-right">Post</button>
+                    <div class="clearfix"></div>
+                    <hr>
+
+                    <ul class="media-list" style="padding: 0;">
+                      <li class="media" *ngFor="let item of comments">
+                        <a class="pull-left">
+                          <img src="../../../../assets/img/logo-1.png" alt="" class="img-circle">
+                        </a>
+                        <div style="background-color: #f0f0f0; border-radius: 10px;" class="media-body ml-1 demo">
+                          <div class="class comments ml-3 mr-3 mt-2">
+                            <span class="text-default pull-right ">
+                              <small class="text-default"> {{datetime(item.createdDate)}}</small>
+                            </span>
+                            <strong class="text-danger"> {{username(item.createdBy)}}</strong>
+                            <p class="text-default ml-2">
+                              {{item.content}}
+                            </p>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</div>

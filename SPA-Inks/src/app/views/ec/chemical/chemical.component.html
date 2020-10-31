@@ -1,0 +1,156 @@
+<div class="card">
+  <!-- <div class="card-header">
+    <h3 class="title">
+      Ingredient List
+    </h3>
+
+  </div> -->
+  <div class="card-body">
+    <div class="btn-group pb-3">
+      <button type="button" (click)="openChemicalModalComponent()" *ngIf="!show" class="btn btn-success">{{'ADD_LABEL' | translate}}</button>
+    </div>
+    <div class="btn-group pb-1">
+      <span style="color: transparent">|</span>
+    </div>
+    <div class="btn-group pb-3">
+      <button type="button" (click)="showModal(importModal)" *ngIf="!show" class="btn btn-success">{{'IMPORT_LABEL' | translate}} Excel</button>
+    </div>
+
+    <div *ngIf="!show">
+      <ejs-grid #chemicalGrid
+        rowHeight='38'
+        [dataSource]='dataChemical'
+        [allowSelection]='true'
+        [allowSorting]='true'
+        [allowExcelExport]='true'
+        [allowSorting]='true'
+        allowFiltering='true'
+        [editSettings]='editChemical'
+        [filterSettings]='filterSettings'
+        [toolbar]='toolbarOptions'
+        showColumnMenu='true'
+        [pageSettings]='pageSettings'
+        (dataBound)='dataBound()'
+        allowPaging="true"
+        (actionBegin)='actionBeginChemical($event)'
+        allowResizing='true'
+        gridLines='Both'
+        (created)="createdSearch($event)"
+        (toolbarClick)='toolbarClick($event)'>
+        <e-columns>
+          <e-column field='#' isPrimaryKey='true' headerText='#' width='40'>
+            <ng-template let-data #template>
+              {{NO(data.index)}}
+            </ng-template>
+          </e-column>
+          <e-column field='supplier' headerText='Supplier' textAlign='Center' width='100'>
+            <ng-template #headerTemplate let-data>
+              {{'SUPPLIER_LABEL' | translate}}
+            </ng-template>
+            <ng-template let-data #template>
+              <ejs-tooltip [content]="tooltip(data.supplier)">
+                {{data.supplier || '#N/A'}}
+              </ejs-tooltip>
+            </ng-template>
+          </e-column>
+          <e-column field='materialNO' headerText='Material #' textAlign='Center' width='100'></e-column>
+          <e-column field='name' headerText='Chemical' textAlign='Center' width='120'>
+            <ng-template #headerTemplate let-data>
+              {{'CHEMICAL_LABEL' | translate}}
+            </ng-template>
+          </e-column>
+          <e-column field='code' headerText='Code' textAlign='Center' width='120'></e-column>
+          <e-column field='process' headerText='Treatment' textAlign='Center' width='120'>
+            <ng-template #template let-data>
+              <ng-container *ngIf="data.process == 'Print'; else elseTemplate">
+                <span style="font-size: small;" class="badge badge-pill badge-primary">{{data.process}}</span>
+              </ng-container>
+              <ng-template #elseTemplate>
+                <span style="font-size: small;" class="badge badge-pill badge-danger">{{data.process}}</span>
+              </ng-template>
+            </ng-template>
+          </e-column>
+          <e-column field='voc' headerText='VOC' textAlign='Center' width='80'></e-column>
+          <e-column field='unit' headerText='Unit' textAlign='Center' width='100'>
+            <ng-template #headerTemplate let-data>
+              {{'UNIT_LABEL' | translate}}
+            </ng-template>
+            <ng-template #template let-data>{{data.unit}} kg</ng-template>
+          </e-column>
+          <e-column field='daysToExpiration' headerText='Days to Expiration' textAlign='Center' width='130'>
+            <ng-template #headerTemplate let-data>
+              {{'DAYEXP_LABEL' | translate}}
+            </ng-template>
+            <ng-template #template let-data>{{data.daysToExpiration}} days</ng-template>
+          </e-column>
+          <e-column field='modify' headerText='Modify %' textAlign='Center' width='130'>
+            <ng-template #template let-data>
+              <ng-container *ngIf="data.modify == true; else elseTemplate">
+                <span style="font-size: small;" class="badge badge-pill badge-success">Yes</span>
+              </ng-container>
+              <ng-template #elseTemplate>
+                <span style="font-size: small;" class="badge badge-pill badge-danger">No</span>
+              </ng-template>
+            </ng-template>
+          </e-column>
+          <!-- <e-column field='createdDate' isPrimaryKey='true' headerText='Created Date' type='date' format='y-MM-d , hh:mm:ss a' textAlign='Center'  width='180'>
+            <ng-template #headerTemplate let-data>
+              {{'CREATED_DATE_LABEL' | translate}}
+            </ng-template>
+            <ng-template let-data #template>
+              <ejs-tooltip [content]="tooltip(data.createdDate | date:'y-MM-dd, hh:mm:ss a')">
+                {{data.createdDate | date:'y-MM-dd, hh:mm:ss a'}}
+              </ejs-tooltip>
+            </ng-template>
+          </e-column> -->
+          <e-column field='Option' isPrimaryKey='true' headerText='Option' textAlign='Center' width='130'>
+            <ng-template #headerTemplate let-data>
+              {{'OPTION' | translate}}
+            </ng-template>
+            <ng-template let-data #template >
+                <div class="btn-group">
+                  <button type="button" (click)='openChemicalEditModalComponent(data)' class="btn btn-xs btn-primary"><i
+                      class="fa fa-edit"></i></button>
+                </div>
+                <div class="btn-group">
+                  <span style="color: transparent">|</span>
+                </div>
+                <div class="btn-group">
+                  <button type="button" (click)='delete(data)' class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                </div>
+            </ng-template>
+          </e-column>
+
+        </e-columns>
+      </ejs-grid>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #importModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <i class="fas fa-plus"></i> {{'IMPORT_LABEL' | translate}} Excel
+    </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="Name">{{'SELECT_FILE' | translate}} (*{{'NOTICE_TEXT' | translate}}: {{'TEXT1' | translate}}, {{'TEXT2' | translate}} <a [href]="excelDownloadUrl">{{'TEXT3' | translate}}</a> {{'TEXT4' | translate}}!)</label>
+          <input (change)="fileProgress($event)" name="file" type="file" class="form-control" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="uploadFile()">{{'UPLOAD_LABEL' | translate}}</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Close</button>
+  </div>
+
+</ng-template>
