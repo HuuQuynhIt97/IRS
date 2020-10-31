@@ -4,8 +4,7 @@
 <div class="row">
   <div class="col-md-12">
     <div class="card">
-
-      <ejs-grid #gridModel [searchSettings]="searchSettings" (dataBound)='dataBound'
+      <ejs-grid #gridModel [searchSettings]="searchSettings" (dataBound)='dataBound()'
         (toolbarClick)='toolbarClick($event)' (actionBegin)="actionBegin($event)" (created)="createdSearch($event)"
         (recordDoubleClick)='onDoubleClick($event)' (actionComplete)='actionComplete($event)' [toolbar]='toolbar'
         [dataSource]='data' allowPaging='true' showColumnMenu='true' allowSorting='true' allowResizing='true'
@@ -90,7 +89,6 @@
           </e-column>
         </e-columns>
       </ejs-grid>
-
     </div>
   </div>
 
@@ -105,20 +103,30 @@
     </div>
     <div class="modal-body">
       <div class="row">
-        <div class="col-md-6">
-          <ejs-grid #gridglue showColumnMenu='true' allowSorting='true' allowResizing='true' gridLines='Both'
-            [dataSource]='glues' [selectedRowIndex]='0' height='250px' (rowSelected)='rowSelected($event)'>
+        <div class="col-md-12">
+          <ejs-grid #gridGlue showColumnMenu='true' allowPaging='true' [pageSettings]='pageSettings' allowSorting='true' allowResizing='true' gridLines='Both'
+            [dataSource]='glues'  height='250px' (rowSelected)='rowSelected($event)'>
             <e-columns>
-              <e-column field='part' isPrimaryKey="true" headerText='Part' textAlign='Center' width='150'>
+              <e-column field='id' isPrimaryKey='true' textAlign='Center' headerText='#' width=20>
+                <ng-template let-data #template>{{NOGlue(data.index)}}</ng-template>
+              </e-column>
+              <e-column field='part' isPrimaryKey="true" headerText='Part' textAlign='Center' width='50'>
                 <ng-template #template let-data>
                   <div data-toggle="tooltip" data-placement="top" title='{{data.part}}'>
                     {{data.part}}
                   </div>
                 </ng-template>
               </e-column>
-              <e-column field='treatmentWay' headerText='Treatment Way' textAlign='Center' width='150'>
+              <e-column field='treatmentWay' headerText='Treatment Way' textAlign='Center' width='50'>
+                <!-- <ng-template #template let-data>
+                  <ejs-dropdownlist #treatmentWayDropdownlist [dataSource]='treatmentWayData'  popupHeight='200px' popupWidth='250px'  [value]='data.name'
+                    [fields]='fieldsPosition' [allowFiltering]='true' [value]="data.treatmentWayID"
+                    (change)='onChangeTreatmentWay($event,data, data.index)'>
+                  </ejs-dropdownlist>
+                </ng-template> -->
+
               </e-column>
-              <e-column field='name' headerText='Recipe' textAlign='Center' width='150'>
+              <e-column field='name' headerText='Recipe' textAlign='Center' width='300'>
                 <ng-template let-data #template>
                   <ng-container *ngIf="data.name === '1' || data.name === null; else elseTemplate">
                     N/A
@@ -131,7 +139,7 @@
             </e-columns>
           </ejs-grid>
         </div>
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
           <ejs-grid #gridInkChemical showColumnMenu='true' allowSorting='true' allowResizing='true' gridLines='Both'
             [dataSource]='ingredients' [allowSorting]='true' height='250px'>
             <e-columns>
@@ -146,7 +154,7 @@
 
             </e-columns>
           </ejs-grid>
-        </div>
+        </div> -->
       </div>
 
     </div>
@@ -202,3 +210,41 @@
   </ng-template>
 
 </div>
+
+<!-- ánh trăng lừa dối -->
+ <div class="row" style="visibility: hidden;">
+    <ejs-grid #gridGlue showColumnMenu='true' allowPaging='true' [pageSettings]='pageSettings' allowSorting='true' allowResizing='true' gridLines='Both'
+    [dataSource]='glues'  height='250px' (rowSelected)='rowSelected($event)'>
+    <e-columns>
+      <e-column field='id' isPrimaryKey='true' textAlign='Center' headerText='#' width=20>
+        <ng-template let-data #template>{{NOGlue(data.index)}}</ng-template>
+      </e-column>
+      <e-column field='part' isPrimaryKey="true" headerText='Part' textAlign='Center' width='50'>
+        <ng-template #template let-data>
+          <div data-toggle="tooltip" data-placement="top" title='{{data.part}}'>
+            {{data.part}}
+          </div>
+        </ng-template>
+      </e-column>
+      <e-column field='treatmentWay' headerText='Treatment Way' textAlign='Center' width='50'>
+        <!-- <ng-template #template let-data>
+          <ejs-dropdownlist #treatmentWayDropdownlist [dataSource]='treatmentWayData'  popupHeight='200px' popupWidth='250px'  [value]='data.name'
+            [fields]='fieldsPosition' [allowFiltering]='true' [value]="data.treatmentWayID"
+            (change)='onChangeTreatmentWay($event,data, data.index)'>
+          </ejs-dropdownlist>
+        </ng-template> -->
+
+      </e-column>
+      <e-column field='name' headerText='Recipe' textAlign='Center' width='300'>
+        <ng-template let-data #template>
+          <ng-container *ngIf="data.name === '1' || data.name === null; else elseTemplate">
+            N/A
+          </ng-container>
+          <ng-template #elseTemplate>
+            {{data.name}}
+          </ng-template>
+        </ng-template>
+      </e-column>
+    </e-columns>
+  </ejs-grid>
+ </div>

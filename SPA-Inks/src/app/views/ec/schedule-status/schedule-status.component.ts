@@ -16,6 +16,8 @@ import { AuthService } from 'src/app/_core/_service/auth.service';
 import { BPFCEstablishService } from 'src/app/_core/_service/bpfc-establish.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ScheduleService } from 'src/app/_core/_service/schedule.service';
+import { IGlues } from 'src/app/_core/_model/glues';
+import { PartService } from 'src/app/_core/_service/part.service';
 
 @Component({
   selector: 'app-schedule-status',
@@ -47,6 +49,8 @@ export class ScheduleStatusComponent implements OnInit {
   public gridModel: GridComponent;
   @ViewChild('gridInkChemical')
   public gridInkChemical: GridComponent;
+  @ViewChild('gridGlue')
+  public gridGlue: GridComponent;
   modalname: ModalName = {
     id: 0,
     name: '',
@@ -59,6 +63,16 @@ export class ScheduleStatusComponent implements OnInit {
   level: any;
   newglueID: any;
   RoleName: string ;
+  treatmentWayData: any;
+  public fieldsPosition: object = { text: 'name', value: 'id' };
+  modalGlues: IGlues = {
+    id: 0,
+    name: '',
+    glueID: 0,
+    partID: 0,
+    treatmentWayID: 0,
+    scheduleID: 0,
+  };
   constructor(
     private modalNameService: ModalNameService,
     private bPFCEstablishService: BPFCEstablishService,
@@ -72,7 +86,8 @@ export class ScheduleStatusComponent implements OnInit {
     private buildingUserService: BuildingUserService,
     private authService: AuthService,
     private spinner: NgxSpinnerService,
-    private scheduleService: ScheduleService
+    private scheduleService: ScheduleService,
+    private partService: PartService
   ) { }
 
   ngOnInit(): void {
@@ -123,13 +138,25 @@ export class ScheduleStatusComponent implements OnInit {
     (this.gridModel.element.querySelector(".e-input-group.e-search .e-input") as any).value = "";
   }
 
-  // getAllUsers() {
-  //   this.buildingUserService.getAllUsers(1, 1000).subscribe((res: any) => {
-  //     this.users = res.result;
-  //     this.filterByFinishedStatus();
-  //   });
-  // }
+  onChangeTreatmentWay(args, data, index) {
+    this.modalGlues.treatmentWayID = args.value ;
+    if (args.isInteracted) {
 
+      if (data.id) {
+        this.modalGlues.id = data.id || 0 ;
+        this.modalGlues.name = data.name ;
+        this.modalGlues.partID = data.partID ;
+        this.modalGlues.scheduleID = Number(this.ScheduleID) ;
+        this.updateGlue(this.modalGlues) ;
+      }
+    }
+  }
+  updateGlue(modal) {
+    this.partService.updateGlue(modal).subscribe((res: any) => {
+      this.alertify.success('Update Treatment successfully!') ;
+      this.getAllGlueByScheduleID(this.ScheduleID) ;
+    })
+  }
   getAll() {
     this.spinner.show();
       setTimeout(() =>{
@@ -176,7 +203,9 @@ export class ScheduleStatusComponent implements OnInit {
   no(item: any): number {
     return (this.pageSettings.currentPage - 1) * this.pageSettings.pageSize + Number(item.index) + 1;
   }
-
+  NOGlue(index) {
+    return (this.gridGlue.pageSettings.currentPage - 1) * this.gridGlue.pageSettings.pageSize + Number(index) + 1;
+  }
   actionBegin(args) {
     if (args.requestType === 'save') {
       this.modalname.id = args.data.id || 0;
@@ -191,6 +220,12 @@ export class ScheduleStatusComponent implements OnInit {
     if (args.requestType === 'delete') {
       this.delete(args.data[0].id);
     }
+  }
+
+  GetDetailSchedule() {
+    this.scheduleService.GetDetailSchedule(this.ScheduleID).subscribe((res: any) => {
+      this.treatmentWayData = res[0].treatmentWay;
+    });
   }
 
   actionComplete(e: any): void {
@@ -384,24 +419,25 @@ export class ScheduleStatusComponent implements OnInit {
   }
 
   openModalDetail(detail, ScheduleID) {
+    this.ScheduleID = ScheduleID;
     this.modalReferenceDetail = this.modalService.open(detail, { size: 'xxl' });
     setTimeout(() => {
       this.getAllGlueByScheduleID(ScheduleID);
+      this.GetDetailSchedule();
     }, 300);
-    this.ScheduleID = ScheduleID;
     this.getComments();
   }
 
   getAllGlueByScheduleID(scheduleID) {
     this.glueService.getGlueByScheduleID(scheduleID).subscribe((res: any) => {
       this.glues = res ;
-      if (this.glues.length === 0) {
-        this.glueid = 0;
-        this.getInkChemicalByglueID(this.glueid);
-      } else {
-        this.glueid = this.glues[0].id;
-        this.getInkChemicalByglueID(this.glueid);
-      }
+      // if (this.glues.length === 0) {
+      //   this.glueid = 0;
+      //   this.getInkChemicalByglueID(this.glueid);
+      // } else {
+      //   this.glueid = this.glues[0].id;
+      //   this.getInkChemicalByglueID(this.glueid);
+      // }
     })
 
   }
